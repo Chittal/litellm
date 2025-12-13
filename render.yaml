@@ -36,10 +36,4 @@ services:
     
     # Health check path
     healthCheckPath: /health
-    
-    # Build command (optional, Render auto-detects Dockerfile)
-    buildCommand: ""
-    
-    # Start command
-    startCommand: litellm --config /app/config.yaml --detailed_debug
 
