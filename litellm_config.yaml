@@ -1,0 +1,108 @@
+# LiteLLM Configuration File
+# Docs: https://docs.litellm.ai/docs/configuration
+
+# General settings
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+  store_model_in_db: True
+
+# Providers configuration (optional - API keys can be specified in model_list instead)
+# providers:
+#   groq:
+#     api_key: ${GROQ_API_KEY}
+#   openai:
+#     api_key: ${OPENAI_API_KEY}
+#     api_base: https://api.openai.com/v1
+#   bedrock:
+#     aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+#     aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+#     region_name: ${AWS_REGION_NAME}
+
+# Model list
+model_list:
+  # Groq Models
+  - model_name: groq-llama
+    litellm_params:
+      model: groq/llama-3.1-8b-instant
+      api_key: os.environ/GROQ_API_KEY
+  
+  # Ollama Models (Local)
+  - model_name: ollama/qwen3:1.7b
+    litellm_params:
+      model: ollama/qwen3:1.7b
+
+  - model_name: ollama/llama3.2:3b
+    litellm_params:
+      model: ollama/llama3.2:3b
+
+  - model_name: ollama/falcon3:1b
+    litellm_params:
+      model: ollama/falcon3:1b
+
+  # OpenAI Models
+  - model_name: openai/gpt-4.1-nano
+    litellm_params:
+      model: openai/gpt-4.1-nano
+      api_key: os.environ/OPENAI_API_KEY
+  
+  - model_name: openai/gpt-5.1
+    litellm_params:
+      model: openai/gpt-5-2025-08-07
+      temperature: 1
+      api_key: os.environ/OPENAI_API_KEY
+
+  - model_name: claude-sonnet-4.5
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5-20250929
+      api_key: os.environ/CLAUDE_API_KEY
+  # AWS Bedrock Models
+  - model_name: bedrock/anthropic.claude-3
+    litellm_params:
+      model: bedrock/anthropic.claude-3-sonnet-20240229-v1:0
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      region_name: os.environ/AWS_REGION_NAME
+  # Claude 3.7 Sonnet requires Inference Profile ARN (not direct model ID)
+  # Replace the ARN below with your actual Inference Profile ARN from AWS Bedrock console
+  # Format: arn:aws:bedrock:REGION:ACCOUNT_ID:inference-profile/PROFILE_NAME
+  # inference profile does not work
+  - model_name: bedrock/anthropic.claude-3-7-sonnet
+    litellm_params:
+      model: bedrock/anthropic.claude-3-7-sonnet-20250219-v1:0
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      region_name: os.environ/AWS_REGION_NAME
+
+  - model_name: bedrock/amazon.titan
+    litellm_params:
+      model: bedrock/amazon.titan-text-express-v1
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      region_name: os.environ/AWS_REGION_NAME
+
+# Fallback configuration
+fallbacks:
+  - model_name: groq-llama
+    fallback_models: 
+      - ollama/llama3.2:3b
+      - ollama/qwen3:1.7b
+
+# Logging configuration
+logging:
+  level: INFO
+  file: ./logs/litellm.log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Rate limiting (optional)
+rate_limits:
+  - model_name: groq-llama
+    rpm: 1000
+    tpm: 100000
+
+# Caching (optional)
+cache:
+  type: redis
+  host: ${REDIS_HOST:-localhost}
+  port: ${REDIS_PORT:-6379}
+  password: ${REDIS_PASSWORD:-}
