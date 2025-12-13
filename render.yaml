@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: litellm
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    envVars:
+      # LiteLLM Core Settings (REQUIRED - set these in Render dashboard)
+      - key: LITELLM_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      
+      # API Keys (Optional - set these in Render dashboard)
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CLAUDE_API_KEY
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_REGION_NAME
+        sync: false
+      
+      # Optional Settings
+      - key: PORT
+        value: "4000"
+      - key: STORE_MODEL_IN_DB
+        value: "True"
+    
+    # Health check path
+    healthCheckPath: /health
+    
+    # Build command (optional, Render auto-detects Dockerfile)
+    buildCommand: ""
+    
+    # Start command
+    startCommand: litellm --config /app/config.yaml --detailed_debug
+

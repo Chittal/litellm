@@ -4,7 +4,9 @@ This directory contains a properly formatted LiteLLM setup based on the [officia
 
 ## Files Structure
 
-- `docker-compose.yml` - Docker Compose configuration
+- `docker-compose.yml` - Docker Compose configuration (for local deployment)
+- `Dockerfile` - Docker image definition (for Render deployment)
+- `render.yaml` - Render Blueprint configuration
 - `litellm_config.yaml` - LiteLLM configuration file
 - `README.md` - This documentation
 
@@ -162,3 +164,62 @@ curl -X POST http://localhost:4000/v1/chat/completions \
    docker-compose pull
    docker-compose up -d
    ```
+
+## Deploying to Render
+
+Render doesn't support `docker-compose.yml` directly, but you can deploy using the provided `Dockerfile` and `render.yaml` blueprint.
+
+### Option 1: Using Render Blueprint (Recommended)
+
+1. **Push your code to a Git repository** (GitHub, GitLab, or Bitbucket)
+
+2. **Connect to Render:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" → "Blueprint"
+   - Connect your Git repository
+   - Render will automatically detect `render.yaml`
+
+3. **Set Environment Variables in Render Dashboard:**
+   After the service is created, go to the service settings and add these environment variables:
+   - `LITELLM_MASTER_KEY` (REQUIRED)
+   - `DATABASE_URL` (REQUIRED)
+   - `OPENAI_API_KEY` (Optional)
+   - `GROQ_API_KEY` (Optional)
+   - `CLAUDE_API_KEY` (Optional)
+   - `AWS_ACCESS_KEY_ID` (Optional)
+   - `AWS_SECRET_ACCESS_KEY` (Optional)
+   - `AWS_REGION` (Optional)
+   - `AWS_REGION_NAME` (Optional)
+
+4. **Deploy:**
+   - Render will automatically build and deploy your service
+   - Your LiteLLM instance will be available at the Render-provided URL
+
+### Option 2: Manual Service Creation
+
+1. **Push your code to a Git repository**
+
+2. **Create a new Web Service:**
+   - Go to [Render Dashboard](https://dashboard.render.com)
+   - Click "New +" → "Web Service"
+   - Connect your Git repository
+   - Set the following:
+     - **Name**: `litellm`
+     - **Runtime**: `Docker`
+     - **Dockerfile Path**: `./Dockerfile`
+     - **Docker Context**: `.`
+     - **Start Command**: `litellm --config /app/config.yaml --detailed_debug`
+     - **Health Check Path**: `/health`
+
+3. **Set Environment Variables** (same as Option 1)
+
+4. **Deploy:**
+   - Click "Create Web Service"
+   - Render will build and deploy automatically
+
+### Notes for Render Deployment
+
+- **Database**: Use an external PostgreSQL database (Supabase, Neon, Railway, or Render's managed PostgreSQL)
+- **Logs**: Logs are available in Render's dashboard under the service logs
+- **Port**: Render automatically assigns a port - no need to set `PORT` environment variable
+- **Health Checks**: Render will use the `/health` endpoint for health monitoring
