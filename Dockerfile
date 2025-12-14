@@ -18,4 +18,4 @@ HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
     CMD curl -f http://localhost:4000/health || exit 1
 
 # Default command
-CMD ["litellm", "--config", "/app/config.yaml", "--detailed_debug"]
+CMD ["--config", "/app/config.yaml", "--detailed_debug"]
