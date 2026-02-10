@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   litellm:
-    image: ghcr.io/berriai/litellm-database:main-stable
+    image: ghcr.io/berriai/litellm-database:main-latest
     container_name: litellm
     ports:
       - "4000:4000"

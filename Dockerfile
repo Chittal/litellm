@@ -1,5 +1,5 @@
 # Use the official LiteLLM image with database support
-FROM ghcr.io/berriai/litellm-database:main-stable
+FROM ghcr.io/berriai/litellm-database:main-latest
 
 # Set working directory
 WORKDIR /app
